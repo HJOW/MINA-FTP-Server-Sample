@@ -31,8 +31,12 @@ import org.apache.ftpserver.ftplet.User;
 import org.apache.ftpserver.ftplet.UserManager;
 import org.apache.ftpserver.usermanager.UsernamePasswordAuthentication;
 
+import com.hjow.ftpserver.auth.AuthFailList;
+import com.hjow.ftpserver.auth.AuthFail;
+
 public class LiteUserManager implements UserManager {
 	protected List<LiteUser> users = new ArrayList<LiteUser>();
+	protected AuthFailList fails = new AuthFailList();
 	
 	public LiteUserManager() {
 		
@@ -46,6 +50,12 @@ public class LiteUserManager implements UserManager {
 				User user = getUserByName(authx.getUsername());
 				if(user == null) throw new AuthenticationFailedException("There is no user named " + authx.getUsername());
 				
+				// 인증실패 누적현황 조회
+				AuthFail tryOne = fails.get(authx.getUsername());
+				if(tryOne != null) {
+					if(tryOne.getCount() >= 5) throw new AuthenticationFailedException("Authentication fail count over.");
+				}
+				
 				// 비밀번호 비교해 맞으면 User 객체를 넘겨준다.
 				if(user.getPassword().equals(authx.getPassword())) return user;
 				
@@ -54,8 +64,8 @@ public class LiteUserManager implements UserManager {
 				byte[] enc = digest.digest(authx.getPassword().getBytes("UTF-8"));
 				if(user.getPassword().equals( Hex.byteArrayToHexString(enc) )) return user;
 				
-				// TODO : Brute Force 기법 방어대책 강구 필요
-				
+				// 인증 실패가 확실
+				fails.occur(authx.getUsername());
 				throw new AuthenticationFailedException("Wrong password for " + authx.getUsername());
 			} catch (FtpException e) {
 				throw new AuthenticationFailedException(e.getMessage(), e);
