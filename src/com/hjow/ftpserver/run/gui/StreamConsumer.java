@@ -1,3 +1,4 @@
+/*
 This project is just simple implementation of Apache MINA FTP server.
 
 Copyright 2023 HJOW
@@ -13,19 +14,10 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+*/
 
+package com.hjow.ftpserver.run.gui;
 
-In this project, following libraries are used.
-
-1. Apache MINA FtpServer - Apache License 2.0
-
-   ftplet-api-1.2.0.jar
-   ftpserver-core-1.2.0.jar
-   mina-core-2.0.19.jar
-   
-   https://mina.apache.org/ftpserver-project/
-   https://www.apache.org/licenses/
-   
-2. SLF4J - MIT
-   
-   https://www.slf4j.org/license.html
+public interface StreamConsumer {
+	public void appendText(String text);
+}

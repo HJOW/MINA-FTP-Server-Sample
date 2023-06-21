@@ -18,17 +18,15 @@ limitations under the License.
 
 package com.hjow.ftpserver;
 
-import java.io.File;
-
 import org.apache.ftpserver.FtpServer;
 import org.apache.ftpserver.FtpServerFactory;
-import org.apache.ftpserver.ftplet.Authority;
-import org.apache.ftpserver.ftplet.AuthorizationRequest;
 import org.apache.ftpserver.ftplet.FtpException;
 import org.apache.ftpserver.ftplet.UserManager;
 import org.apache.ftpserver.listener.ListenerFactory;
 
 public class FTPServer {
+	/*
+	// SAMPLE
 	public static void main(String[] args) throws FtpException {
 		File roots = new File("G:\\temp\\test\\ft\\recv");
 		int  port  = 1025;
@@ -60,6 +58,7 @@ public class FTPServer {
 		FTPServer server = new FTPServer(port, userManager);
 		server.start();
 	}
+	*/
 	
 	protected FtpServer server;
 
@@ -76,5 +75,13 @@ public class FTPServer {
 	
 	public void start() throws FtpException {
 		server.start();
+	}
+	
+	public void stop() {
+		server.stop();
+	}
+	
+	public boolean isStopped() {
+		return server.isStopped();
 	}
 }

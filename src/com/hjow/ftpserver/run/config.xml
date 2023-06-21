@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment/>
+<entry key="root">/home/ftpuser/ftproot/</entry>
+<entry key="port">21</entry>
+<entry key="user">
+[
+    { "name" : "root", "password" : "1", "enabled" : "Y", "home" : "", "admin" : "Y", "maxIdleTime" : 0 }
+]
+</entry>
+</properties>
