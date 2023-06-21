@@ -18,6 +18,8 @@ limitations under the License.
 
 package com.hjow.ftpserver;
 
+import java.io.File;
+
 import org.apache.ftpserver.FtpServer;
 import org.apache.ftpserver.FtpServerFactory;
 import org.apache.ftpserver.ftplet.Authority;
@@ -28,13 +30,16 @@ import org.apache.ftpserver.listener.ListenerFactory;
 
 public class FTPServer {
 	public static void main(String[] args) throws FtpException {
+		File roots = new File("G:\\temp\\test\\ft\\recv");
+		int  port  = 1025;
+		
 		LiteUserManager userManager = new LiteUserManager();
 		
 		LiteUser one = new LiteUser();
 		one.setName("root");
 		one.setPassword("1");
 		one.setEnabled(true);
-		one.setHomeDirectory("G:\\temp\\test\\ft\\recv");
+		one.setHomeDirectory(roots.getAbsolutePath());
 		one.setMaxIdleTime(0);
 		one.setAdmin(true);
 		one.addAuth(new Authority() {
@@ -52,7 +57,7 @@ public class FTPServer {
 		});
 		userManager.save(one);
 		
-		FTPServer server = new FTPServer(1025, userManager);
+		FTPServer server = new FTPServer(port, userManager);
 		server.start();
 	}
 	

@@ -38,10 +38,12 @@ public class LiteUserManager implements UserManager {
 	protected List<LiteUser> users = new ArrayList<LiteUser>();
 	protected AuthFailList fails = new AuthFailList();
 	
+	protected transient int blockStrdCount = 5;
+	
 	public LiteUserManager() {
 		
 	}
-
+	
 	@Override
 	public User authenticate(Authentication arg0) throws AuthenticationFailedException {
 		if(arg0 instanceof UsernamePasswordAuthentication) {
@@ -53,7 +55,7 @@ public class LiteUserManager implements UserManager {
 				// 인증실패 누적현황 조회
 				AuthFail tryOne = fails.get(authx.getUsername());
 				if(tryOne != null) {
-					if(tryOne.getCount() >= 5) throw new AuthenticationFailedException("Authentication fail count over.");
+					if(tryOne.getCount() >= blockStrdCount) throw new AuthenticationFailedException("Authentication fail count over.");
 				}
 				
 				// 비밀번호 비교해 맞으면 User 객체를 넘겨준다.
@@ -136,5 +138,20 @@ public class LiteUserManager implements UserManager {
 	public void save(User arg0) throws FtpException {
 		if(! (arg0 instanceof LiteUser)) throw new IllegalArgumentException("Not allowed user type"); 
 		users.add((LiteUser) arg0);
+	}
+	
+	/** 현재 설정된 계정 잠금 기준값을 입력합니다. 기록 만료 시간 이내에 이 횟수 이상 인증 실패 시 계정이 잠기게 됩니다. */
+	public void setBlockStandardCount(int count) {
+		this.blockStrdCount = count;
+	}
+	
+	/** 현재 설정된 계정 잠금 기준값을 반환합니다. 기록 만료 시간 이내에 이 횟수 이상 인증 실패 시 계정이 잠기게 됩니다. */
+	public int getBlockStandardCount() {
+		return blockStrdCount;
+	}
+	
+	/** 인증 실패 기록의 만료 시간을 밀리초 단위로 지정합니다. 잦은 인증 실패로 로그인이 잠긴 계정이 해제되는 데 걸리는 시간을 의미합니다. */
+	public void setFailExpirationTime(long milliseconds) {
+		fails.setExpirationTime(milliseconds);
 	}
 }
