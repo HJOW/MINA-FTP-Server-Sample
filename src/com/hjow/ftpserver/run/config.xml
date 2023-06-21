@@ -1,7 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-<comment/>
+<comment>
+root : FTP 서버가 관리할 최상위 디렉토리
+port : FTP 서버 포트
+user : 사용자 목록을 JSON 배열로 입력
+       예)
+           [
+               { "name" : "root", "password" : "1", "enabled" : "Y", "home" : "", "admin" : "Y", "maxIdleTime" : 0 }
+           ]
+       name        : 사용자명
+       password    : 비밀번호 (SHA-256 처리 후 HEX String 처리하여 공백없이 입력해도 사용 가능)
+       enabled     : 사용여부 (y / yes / t / true 입력 시 '사용')
+       admin       : 관리자 여부 (y / yes / t / true 입력 시 '관리자')
+       maxIdleTime : 최대 대기시간 (0 입력 시 사용 안 함)
+       home        : 홈 디렉토리 (root 디렉토리 하위로만 지정 가능하며, root 디렉토리와 겹치는 부분은 입력하지 말 것) 
+
+</comment>
 <entry key="root">/home/ftpuser/ftproot/</entry>
 <entry key="port">21</entry>
 <entry key="user">
