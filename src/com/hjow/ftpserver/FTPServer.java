@@ -25,6 +25,60 @@ import org.apache.ftpserver.ftplet.UserManager;
 import org.apache.ftpserver.listener.ListenerFactory;
 
 public class FTPServer {
+	protected FtpServer server = null;
+	
+	public FTPServer() {
+		
+	}
+
+	public FTPServer(int port, UserManager userManager) throws FtpException {
+		this();
+		prepare(port, userManager);
+	}
+	
+	public void prepare(int port, UserManager userManager) {
+		if(server != null) {
+			server.stop();
+			server = null;
+		}
+		
+		FtpServerFactory serverFactory = new FtpServerFactory();
+		
+		ListenerFactory listenerFactory = new ListenerFactory();
+		listenerFactory.setPort(port);
+		serverFactory.addListener("default", listenerFactory.createListener());
+		serverFactory.setUserManager(userManager);
+		
+		server = serverFactory.createServer();
+	}
+	
+	public void start() throws FtpException {
+		if(server == null) throw new NullPointerException("This FTPServer instance is not prepared. Please call 'prepare(int, UserManager)' first !");
+		server.start();
+	}
+	
+	public FtpServer getFtpServerInstance() {
+		return server;
+	}
+	
+	public void stop() {
+		if(server == null) return;
+		server.stop();
+	}
+	
+	public boolean isStopped() {
+		if(server == null) return true;
+		return server.isStopped();
+	}
+	
+	public boolean isSuspended() {
+		return server.isSuspended();
+	}
+	
+	public static String getVersion() {
+		return org.apache.ftpserver.Version.getVersion();
+	}
+	
 	/*
 	// SAMPLE
 	public static void main(String[] args) throws FtpException {
@@ -59,29 +113,4 @@ public class FTPServer {
 		server.start();
 	}
 	*/
-	
-	protected FtpServer server;
-
-	public FTPServer(int port, UserManager userManager) throws FtpException {
-		FtpServerFactory serverFactory = new FtpServerFactory();
-		
-		ListenerFactory listenerFactory = new ListenerFactory();
-		listenerFactory.setPort(port);
-		serverFactory.addListener("default", listenerFactory.createListener());
-		serverFactory.setUserManager(userManager);
-		
-		server = serverFactory.createServer();
-	}
-	
-	public void start() throws FtpException {
-		server.start();
-	}
-	
-	public void stop() {
-		server.stop();
-	}
-	
-	public boolean isStopped() {
-		return server.isStopped();
-	}
 }
