@@ -19,6 +19,7 @@ package com.hjow.ftpserver.secured;
 
 import java.io.File;
 
+import org.apache.ftpserver.ConnectionConfig;
 import org.apache.ftpserver.FtpServerFactory;
 import org.apache.ftpserver.ftplet.FtpException;
 import org.apache.ftpserver.ftplet.UserManager;
@@ -36,14 +37,18 @@ public class SecuredFTPServer extends FTPServer {
     }
     
     public SecuredFTPServer(int port, UserManager userManager, File keystore, String keystorePassword) throws FtpException {
+		this(port, userManager, keystore, keystorePassword, null);
+	}
+    
+    public SecuredFTPServer(int port, UserManager userManager, File keystore, String keystorePassword, ConnectionConfig config) throws FtpException {
 		this();
 		setKeyStore(keystore);
 		setKeyStorePassword(keystorePassword);
-		prepare(port, userManager);
+		prepare(port, userManager, config);
 	}
     
     @Override
-    public void prepare(int port, UserManager userManager) {
+    public void prepare(int port, UserManager userManager, ConnectionConfig config) {
     	if(fileKeystore == null) throw new NullPointerException("There is no keystore file selected. Please call 'setKeyStore(file)' first !");
     	if(! fileKeystore.exists()) throw new RuntimeException("File is not exist : " + fileKeystore.getAbsolutePath());
     	if(keystorePassword == null) throw new NullPointerException("There is no keystore password. Please call 'setKeyStorePassword(pw)' first !");
@@ -54,6 +59,7 @@ public class SecuredFTPServer extends FTPServer {
 		}
 		
 		FtpServerFactory serverFactory = new FtpServerFactory();
+		if(config != null) serverFactory.setConnectionConfig(config);
 		
 		ListenerFactory listenerFactory = new ListenerFactory();
 		listenerFactory.setPort(port);

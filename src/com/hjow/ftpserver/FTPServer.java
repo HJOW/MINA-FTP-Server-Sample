@@ -18,6 +18,7 @@ limitations under the License.
 
 package com.hjow.ftpserver;
 
+import org.apache.ftpserver.ConnectionConfig;
 import org.apache.ftpserver.FtpServer;
 import org.apache.ftpserver.FtpServerFactory;
 import org.apache.ftpserver.ftplet.FtpException;
@@ -36,13 +37,23 @@ public class FTPServer {
 		prepare(port, userManager);
 	}
 	
+	public FTPServer(int port, UserManager userManager, ConnectionConfig config) throws FtpException {
+		this();
+		prepare(port, userManager, config);
+	}
+	
 	public void prepare(int port, UserManager userManager) {
+		prepare(port, userManager, null);
+	}
+	
+	public void prepare(int port, UserManager userManager, ConnectionConfig config) {
 		if(server != null) {
 			server.stop();
 			server = null;
 		}
 		
 		FtpServerFactory serverFactory = new FtpServerFactory();
+		if(config != null) serverFactory.setConnectionConfig(config);
 		
 		ListenerFactory listenerFactory = new ListenerFactory();
 		listenerFactory.setPort(port);
