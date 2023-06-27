@@ -44,38 +44,42 @@ public class LiteUserManager implements UserManager {
 		
 	}
 	
+	public User authenticate(String username, String password)  throws AuthenticationFailedException {
+		try {
+			User user = getUserByName(username);
+			if(user == null) throw new AuthenticationFailedException("There is no user named " + username);
+			
+			// 인증실패 누적현황 조회
+			AuthFail tryOne = fails.get(username);
+			if(tryOne != null) {
+				if(tryOne.getCount() >= blockStrdCount) throw new AuthenticationFailedException("Authentication fail count over.");
+			}
+			
+			// 비밀번호 비교해 맞으면 User 객체를 넘겨준다.
+			if(user.getPassword().equals(password)) return user;
+			
+			// SHA-256 적용 이후 HEX String 적용하여 다시한번 비교한다.
+			MessageDigest digest = MessageDigest.getInstance("SHA-256");
+			byte[] enc = digest.digest(password.getBytes("UTF-8"));
+			if(user.getPassword().equals( Hex.byteArrayToHexString(enc) )) return user;
+			
+			// 인증 실패가 확실
+			fails.occur(username);
+			throw new AuthenticationFailedException("Wrong password for " + username);
+		} catch (FtpException e) {
+			throw new AuthenticationFailedException(e.getMessage(), e);
+		} catch (NoSuchAlgorithmException e) {
+			throw new AuthenticationFailedException(e.getMessage(), e);
+		} catch (UnsupportedEncodingException e) {
+			throw new AuthenticationFailedException(e.getMessage(), e);
+		}
+	}
+	
 	@Override
 	public User authenticate(Authentication arg0) throws AuthenticationFailedException {
 		if(arg0 instanceof UsernamePasswordAuthentication) {
 			UsernamePasswordAuthentication authx = (UsernamePasswordAuthentication) arg0;
-			try {
-				User user = getUserByName(authx.getUsername());
-				if(user == null) throw new AuthenticationFailedException("There is no user named " + authx.getUsername());
-				
-				// 인증실패 누적현황 조회
-				AuthFail tryOne = fails.get(authx.getUsername());
-				if(tryOne != null) {
-					if(tryOne.getCount() >= blockStrdCount) throw new AuthenticationFailedException("Authentication fail count over.");
-				}
-				
-				// 비밀번호 비교해 맞으면 User 객체를 넘겨준다.
-				if(user.getPassword().equals(authx.getPassword())) return user;
-				
-				// SHA-256 적용 이후 HEX String 적용하여 다시한번 비교한다.
-				MessageDigest digest = MessageDigest.getInstance("SHA-256");
-				byte[] enc = digest.digest(authx.getPassword().getBytes("UTF-8"));
-				if(user.getPassword().equals( Hex.byteArrayToHexString(enc) )) return user;
-				
-				// 인증 실패가 확실
-				fails.occur(authx.getUsername());
-				throw new AuthenticationFailedException("Wrong password for " + authx.getUsername());
-			} catch (FtpException e) {
-				throw new AuthenticationFailedException(e.getMessage(), e);
-			} catch (NoSuchAlgorithmException e) {
-				throw new AuthenticationFailedException(e.getMessage(), e);
-			} catch (UnsupportedEncodingException e) {
-				throw new AuthenticationFailedException(e.getMessage(), e);
-			}
+			return authenticate(authx.getUsername(), authx.getPassword());
 		} else {
 			throw new AuthenticationFailedException("Unknown authentication method");
 		}

@@ -26,11 +26,20 @@ In this project, following libraries are used.
    https://mina.apache.org/ftpserver-project/
    https://www.apache.org/licenses/
    
-2. SLF4J - MIT License
+2. Apache MINA SSHD - Apache License 2.0
+
+   sshd-core-2.10.0.jar
+   sshd-common-2.10.0.jar
+   sshd-scp-2.10.0.jar
+   
+   https://github.com/apache/mina-sshd/blob/master/LICENSE.txt
+   https://www.apache.org/licenses/
+   
+3. SLF4J - MIT License
    
    https://www.slf4j.org/license.html
    
-3. JSON Simple - Apache License 2.0
+4. JSON Simple - Apache License 2.0
 
    https://github.com/fangyidong/json-simple/blob/master/LICENSE.txt
 
