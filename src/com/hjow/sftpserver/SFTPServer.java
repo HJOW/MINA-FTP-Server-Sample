@@ -22,6 +22,7 @@ import java.nio.file.Path;
 
 import org.apache.ftpserver.ftplet.AuthenticationFailedException;
 import org.apache.ftpserver.ftplet.User;
+import org.apache.sshd.common.file.virtualfs.VirtualFileSystemFactory;
 import org.apache.sshd.scp.server.ScpCommandFactory;
 import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.auth.AsyncAuthException;
@@ -44,7 +45,7 @@ public class SFTPServer implements AutoCloseable {
     protected SshServer ssh;
     protected LiteUserManager userManager;
     
-    public void prepare(int port, Path keyPath, CommandFactory commandFactory) {
+    public void prepare(int port, Path home, Path keyPath, CommandFactory commandFactory) {
     	if(ssh != null) {
     		try {  ssh.close();  } catch(Throwable t) { t.printStackTrace(); }
     	}
@@ -60,6 +61,12 @@ public class SFTPServer implements AutoCloseable {
     	
     	if(commandFactory != null) ssh.setCommandFactory(new ScpCommandFactory.Builder().withDelegate(commandFactory).build());
     	else                       ssh.setCommandFactory(new ScpCommandFactory.Builder().build());
+    	
+    	if(home != null) {
+    		VirtualFileSystemFactory vFileSystemFactory = new VirtualFileSystemFactory(home);
+        	ssh.setFileSystemFactory(vFileSystemFactory);
+    	}
+    	
     	ssh.setPasswordAuthenticator(new PasswordAuthenticator() {
 			@Override
 			public boolean authenticate(String username, String password, ServerSession session) throws PasswordChangeRequiredException, AsyncAuthException {
