@@ -19,6 +19,7 @@ limitations under the License.
 package com.hjow.ftpserver;
 
 import org.apache.ftpserver.ConnectionConfig;
+import org.apache.ftpserver.DataConnectionConfiguration;
 import org.apache.ftpserver.FtpServer;
 import org.apache.ftpserver.FtpServerFactory;
 import org.apache.ftpserver.ftplet.FtpException;
@@ -39,14 +40,24 @@ public class FTPServer {
 	
 	public FTPServer(int port, UserManager userManager, ConnectionConfig config) throws FtpException {
 		this();
-		prepare(port, userManager, config);
+		prepare(port, userManager, config, null);
+	}
+	
+	public FTPServer(int port, UserManager userManager, DataConnectionConfiguration dconfig) throws FtpException {
+		this();
+		prepare(port, userManager, null, dconfig);
+	}
+	
+	public FTPServer(int port, UserManager userManager, ConnectionConfig config, DataConnectionConfiguration dconfig) throws FtpException {
+		this();
+		prepare(port, userManager, config, dconfig);
 	}
 	
 	public void prepare(int port, UserManager userManager) {
-		prepare(port, userManager, null);
+		prepare(port, userManager, null, null);
 	}
 	
-	public void prepare(int port, UserManager userManager, ConnectionConfig config) {
+	public void prepare(int port, UserManager userManager, ConnectionConfig config, DataConnectionConfiguration dconfig) {
 		if(server != null) {
 			server.stop();
 			server = null;
@@ -57,6 +68,8 @@ public class FTPServer {
 		
 		ListenerFactory listenerFactory = new ListenerFactory();
 		listenerFactory.setPort(port);
+		if(dconfig != null) listenerFactory.setDataConnectionConfiguration(dconfig);
+		
 		serverFactory.addListener("default", listenerFactory.createListener());
 		serverFactory.setUserManager(userManager);
 		

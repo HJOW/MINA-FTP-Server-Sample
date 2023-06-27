@@ -20,6 +20,7 @@ package com.hjow.ftpserver.secured;
 import java.io.File;
 
 import org.apache.ftpserver.ConnectionConfig;
+import org.apache.ftpserver.DataConnectionConfiguration;
 import org.apache.ftpserver.FtpServerFactory;
 import org.apache.ftpserver.ftplet.FtpException;
 import org.apache.ftpserver.ftplet.UserManager;
@@ -31,24 +32,34 @@ import com.hjow.ftpserver.FTPServer;
 public class SecuredFTPServer extends FTPServer {
 	protected File   fileKeystore     = null;
 	protected String keystorePassword = null;
+	protected boolean implicit        = false;
 	
     public SecuredFTPServer() {
     	super();
     }
     
     public SecuredFTPServer(int port, UserManager userManager, File keystore, String keystorePassword) throws FtpException {
-		this(port, userManager, keystore, keystorePassword, null);
+		this(port, userManager, keystore, keystorePassword, null, null);
 	}
     
-    public SecuredFTPServer(int port, UserManager userManager, File keystore, String keystorePassword, ConnectionConfig config) throws FtpException {
+    public SecuredFTPServer(int port, UserManager userManager, File keystore, String keystorePassword, boolean implicit) throws FtpException {
+		this(port, userManager, keystore, keystorePassword, null, null, implicit);
+	}
+    
+    public SecuredFTPServer(int port, UserManager userManager, File keystore, String keystorePassword, ConnectionConfig config, DataConnectionConfiguration dconfig) throws FtpException {
+    	this(port, userManager, keystore, keystorePassword, config, dconfig, false);
+    }
+    
+    public SecuredFTPServer(int port, UserManager userManager, File keystore, String keystorePassword, ConnectionConfig config, DataConnectionConfiguration dconfig, boolean implicit) throws FtpException {
 		this();
 		setKeyStore(keystore);
 		setKeyStorePassword(keystorePassword);
-		prepare(port, userManager, config);
+		this.implicit = implicit;
+		prepare(port, userManager, config, dconfig);
 	}
     
     @Override
-    public void prepare(int port, UserManager userManager, ConnectionConfig config) {
+    public void prepare(int port, UserManager userManager, ConnectionConfig config, DataConnectionConfiguration dconfig) {
     	if(fileKeystore == null) throw new NullPointerException("There is no keystore file selected. Please call 'setKeyStore(file)' first !");
     	if(! fileKeystore.exists()) throw new RuntimeException("File is not exist : " + fileKeystore.getAbsolutePath());
     	if(keystorePassword == null) throw new NullPointerException("There is no keystore password. Please call 'setKeyStorePassword(pw)' first !");
@@ -69,7 +80,8 @@ public class SecuredFTPServer extends FTPServer {
 		sslFactory.setKeystorePassword(keystorePassword);
 		
 		listenerFactory.setSslConfiguration(sslFactory.createSslConfiguration());
-		listenerFactory.setImplicitSsl(true);
+		listenerFactory.setImplicitSsl(implicit);
+		if(dconfig != null) listenerFactory.setDataConnectionConfiguration(dconfig);
 		
 		serverFactory.addListener("default", listenerFactory.createListener());
 		serverFactory.setUserManager(userManager);
