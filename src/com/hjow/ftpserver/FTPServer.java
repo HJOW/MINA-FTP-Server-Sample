@@ -40,24 +40,24 @@ public class FTPServer {
 	
 	public FTPServer(int port, UserManager userManager, ConnectionConfig config) throws FtpException {
 		this();
-		prepare(port, userManager, config, null);
+		prepare(port, userManager, config, null, false);
 	}
 	
 	public FTPServer(int port, UserManager userManager, DataConnectionConfiguration dconfig) throws FtpException {
 		this();
-		prepare(port, userManager, null, dconfig);
+		prepare(port, userManager, null, dconfig, false);
 	}
 	
-	public FTPServer(int port, UserManager userManager, ConnectionConfig config, DataConnectionConfiguration dconfig) throws FtpException {
+	public FTPServer(int port, UserManager userManager, ConnectionConfig config, DataConnectionConfiguration dconfig, boolean implicitSsl) throws FtpException {
 		this();
-		prepare(port, userManager, config, dconfig);
+		prepare(port, userManager, config, dconfig, implicitSsl);
 	}
 	
 	public void prepare(int port, UserManager userManager) {
-		prepare(port, userManager, null, null);
+		prepare(port, userManager, null, null, false);
 	}
 	
-	public void prepare(int port, UserManager userManager, ConnectionConfig config, DataConnectionConfiguration dconfig) {
+	public void prepare(int port, UserManager userManager, ConnectionConfig config, DataConnectionConfiguration dconfig, boolean implicitSsl) {
 		if(server != null) {
 			server.stop();
 			server = null;
@@ -68,6 +68,7 @@ public class FTPServer {
 		
 		ListenerFactory listenerFactory = new ListenerFactory();
 		listenerFactory.setPort(port);
+		listenerFactory.setImplicitSsl(implicitSsl);
 		if(dconfig != null) listenerFactory.setDataConnectionConfiguration(dconfig);
 		
 		serverFactory.addListener("default", listenerFactory.createListener());

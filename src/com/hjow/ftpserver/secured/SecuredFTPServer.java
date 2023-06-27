@@ -55,11 +55,11 @@ public class SecuredFTPServer extends FTPServer {
 		setKeyStore(keystore);
 		setKeyStorePassword(keystorePassword);
 		this.implicit = implicit;
-		prepare(port, userManager, config, dconfig);
+		prepare(port, userManager, config, dconfig, implicit);
 	}
     
     @Override
-    public void prepare(int port, UserManager userManager, ConnectionConfig config, DataConnectionConfiguration dconfig) {
+    public void prepare(int port, UserManager userManager, ConnectionConfig config, DataConnectionConfiguration dconfig, boolean implicit) {
     	if(fileKeystore == null) throw new NullPointerException("There is no keystore file selected. Please call 'setKeyStore(file)' first !");
     	if(! fileKeystore.exists()) throw new RuntimeException("File is not exist : " + fileKeystore.getAbsolutePath());
     	if(keystorePassword == null) throw new NullPointerException("There is no keystore password. Please call 'setKeyStorePassword(pw)' first !");
