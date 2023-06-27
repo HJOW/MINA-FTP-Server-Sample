@@ -68,7 +68,7 @@ public class FTPServer {
 		
 		ListenerFactory listenerFactory = new ListenerFactory();
 		listenerFactory.setPort(port);
-		listenerFactory.setImplicitSsl(implicitSsl);
+		if(implicitSsl) listenerFactory.setImplicitSsl(implicitSsl);
 		if(dconfig != null) listenerFactory.setDataConnectionConfiguration(dconfig);
 		
 		serverFactory.addListener("default", listenerFactory.createListener());
