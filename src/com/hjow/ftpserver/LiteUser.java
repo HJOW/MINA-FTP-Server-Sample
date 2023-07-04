@@ -34,7 +34,16 @@ public class LiteUser implements User {
 	protected List<Authority> auths = new Vector<Authority>();
 	
 	public LiteUser() {
-		
+		enabled = true;
+		admin   = false;
+		maxIdleTime = 60;
+	}
+	
+	public LiteUser(String name, String password, String homeDirectory) {
+		this();
+		setName(name);
+		setPassword(password);
+		setHomeDirectory(homeDirectory);
 	}
 	
 	@Override
