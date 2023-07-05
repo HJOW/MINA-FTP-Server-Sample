@@ -11,5 +11,8 @@
 	<classpathentry kind="lib" path="src/lib/sshd-common-2.10.0.jar"/>
 	<classpathentry kind="lib" path="src/lib/sshd-core-2.10.0.jar"/>
 	<classpathentry kind="lib" path="src/lib/sshd-scp-2.10.0.jar"/>
+	<classpathentry kind="lib" path="src/lib/netty-all-4.0.56.Final.jar"/>
+	<classpathentry kind="lib" path="src/lib/sshd-netty-2.10.0.jar"/>
+	<classpathentry kind="lib" path="src/lib/sshd-sftp-2.10.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

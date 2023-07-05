@@ -19,11 +19,11 @@ package com.hjow.sftpserver;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Collections;
 
 import org.apache.ftpserver.ftplet.AuthenticationFailedException;
 import org.apache.ftpserver.ftplet.User;
 import org.apache.sshd.common.file.virtualfs.VirtualFileSystemFactory;
-import org.apache.sshd.scp.server.ScpCommandFactory;
 import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.auth.AsyncAuthException;
 import org.apache.sshd.server.auth.password.PasswordAuthenticator;
@@ -31,23 +31,50 @@ import org.apache.sshd.server.auth.password.PasswordChangeRequiredException;
 import org.apache.sshd.server.command.CommandFactory;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.apache.sshd.server.session.ServerSession;
+import org.apache.sshd.sftp.server.SftpSubsystemFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.hjow.ftpserver.FTPServer;
 import com.hjow.ftpserver.LiteUserManager;
 
 /**
- * Caution ! None-completed source !!
+ * <pre>
+ * SFTP server implementation.
  * 
+ * necessary jar
+ *     json_simple-1.1.jar    
+ *     mina-core-2.0.19.jar
+ *     netty-all-4.0.56.Final.jar
+ *     slf4j-api-2.0.7.jar
+ *     slf4j-simple-2.0.7.jar
+ *     sshd-common-2.10.0.jar
+ *     sshd-core-2.10.0.jar
+ *     sshd-netty-2.10.0.jar
+ *     sshd-sftp-2.10.0.jar
+ * </pre>
  * 
  * @author HJOW
  *
  */
 public class SFTPServer implements AutoCloseable {
+	public static final Logger LOGGER = LoggerFactory.getLogger(FTPServer.class);
+	
     protected SshServer ssh;
     protected LiteUserManager userManager;
+    
+    public void prepare(int port, Path home) {
+    	prepare(port, home, null);
+    }
+    
+    public void prepare(int port, Path home, Path keyPath) {
+    	prepare(port, home, keyPath);
+    }
     
     public void prepare(int port, Path home, Path keyPath, CommandFactory commandFactory) {
     	if(ssh != null) {
     		try {  ssh.close();  } catch(Throwable t) { t.printStackTrace(); }
+    		ssh = null;
     	}
     	
     	if(userManager == null) {
@@ -59,8 +86,8 @@ public class SFTPServer implements AutoCloseable {
     	if(keyPath != null) ssh.setKeyPairProvider(new SimpleGeneratorHostKeyProvider(keyPath));
     	else                ssh.setKeyPairProvider(new SimpleGeneratorHostKeyProvider());
     	
-    	if(commandFactory != null) ssh.setCommandFactory(new ScpCommandFactory.Builder().withDelegate(commandFactory).build());
-    	else                       ssh.setCommandFactory(new ScpCommandFactory.Builder().build());
+    	ssh.setSubsystemFactories(Collections.singletonList(new SftpSubsystemFactory()));
+    	if(commandFactory != null) ssh.setCommandFactory(commandFactory);
     	
     	if(home != null) {
     		VirtualFileSystemFactory vFileSystemFactory = new VirtualFileSystemFactory(home);
@@ -74,7 +101,7 @@ public class SFTPServer implements AutoCloseable {
 					User user = userManager.authenticate(username, password);
 					return (user != null);
 				} catch (AuthenticationFailedException e) {
-					System.out.println(e.getMessage());
+					LOGGER.warn("Authentication failed at " + this.getClass().getSimpleName() + ", username is " + username + " - " + e.getMessage());
 					return false;
 				}
 			}

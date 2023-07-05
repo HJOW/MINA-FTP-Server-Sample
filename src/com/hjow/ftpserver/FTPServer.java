@@ -25,8 +25,27 @@ import org.apache.ftpserver.FtpServerFactory;
 import org.apache.ftpserver.ftplet.FtpException;
 import org.apache.ftpserver.ftplet.UserManager;
 import org.apache.ftpserver.listener.ListenerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * <pre>
+ * FTP server implementation.
+ * 
+ * necessary jar
+ *     ftplet-api-1.2.0.jar
+ *     ftpserver-core-1.2.0.jar
+ *     json_simple-1.1.jar    
+ *     mina-core-2.0.19.jar
+ *     slf4j-api-2.0.7.jar
+ *     slf4j-simple-2.0.7.jar
+ * </pre>
+ * 
+ * @author HJOW
+ *
+ */
 public class FTPServer {
+	public static final Logger LOGGER = LoggerFactory.getLogger(FTPServer.class);
 	protected FtpServer server = null;
 	
 	public FTPServer() {
