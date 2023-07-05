@@ -52,6 +52,9 @@ import com.hjow.ftpserver.LiteUserManager;
  *     sshd-core-2.10.0.jar
  *     sshd-netty-2.10.0.jar
  *     sshd-sftp-2.10.0.jar
+ * 
+ * Apache MINA sshd does not support Apache MINA 2.x anyway.
+ *     https://github.com/apache/mina-sshd/issues/360
  * </pre>
  * 
  * @author HJOW
